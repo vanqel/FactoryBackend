@@ -1,4 +1,11 @@
 server:
+  ssl:
+    key-store-type: PKCS12
+    key-store: classpath:keystore/keystore.p12
+    key-alias: tomcat
+    enabled: true
+    key-store-password: tomcat2
+
   port: 8099
   servlet:
     multipart:
