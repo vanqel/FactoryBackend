@@ -5,17 +5,27 @@ import com.api.factory.dictionary.assortment.dto.AssortmentInput
 import com.api.factory.dictionary.assortment.dto.AssortmentUpdateInput
 import com.api.factory.dictionary.assortment.models.AssortmentEntity
 import com.api.factory.dictionary.assortment.models.AssortmentTable
+import com.api.factory.dictionary.assortment.normal.models.NormalEntity
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Repository
 @Transactional
 class AssortmentRepository : IAssortmentRepository {
-    override fun saveAssortment(body: AssortmentInput): AssortmentEntity =
-        AssortmentEntity.new {
+    override fun saveAssortment(body: AssortmentInput): AssortmentEntity {
+        val ass = AssortmentEntity.new {
             name = body.name
             count = body.count
         }
+        NormalEntity.new {
+            obj = ass
+            count = 1
+            date = LocalDateTime.now()
+        }
+        return ass
+    }
+
 
 
     override fun updateAssortment(body: AssortmentUpdateInput): AssortmentEntity =
