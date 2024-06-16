@@ -20,6 +20,5 @@ interface IStatisticService {
     fun getRatesByDatestamp(dateStart: LocalDate, dateEnd: LocalDate): Map<ObjectOutput, List<StatsByTypeSum>>
     fun getStatisticDayMonthTotal(date: LocalDate): Map<ObjectOutput, StatsObjectDayMonthYear>
 
-    fun putNormal(obj: NormalInput): NormalInput
 }
 

@@ -5,4 +5,5 @@ object DictionaryRegApi {
 
     const val OBJECTS = "$API/objects"
     const val ASSORTMENT = "$API/assortment"
+    const val NORMAL = "$API/workplane"
 }

@@ -88,8 +88,4 @@ class StatsController(override val service: IStatisticService) : IStatsControlle
         return service.getStatisticDayMonthTotal(date)
     }
 
-    @PostMapping("normal")
-    override fun addNormal(body: NormalInput): NormalInput {
-        return service.putNormal(body)
-    }
 }

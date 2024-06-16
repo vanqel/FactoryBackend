@@ -34,6 +34,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.18")
 
+    // XLSX
+    implementation("org.apache.poi:poi-ooxml:5.2.2")
+
     // SWAGGER
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 

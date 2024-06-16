@@ -1,11 +1,12 @@
 package com.api.factory.reporting.files.service
 
+import com.api.factory.reporting.config.XLSXMultipartFile
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 
 interface IReportXlsxService {
 
-    fun generateReport( date: LocalDate): MultipartFile
+    fun generateReport(date: LocalDate): XLSXMultipartFile
 
     fun generateReport(reportId: Long, date: LocalDate): MultipartFile
 

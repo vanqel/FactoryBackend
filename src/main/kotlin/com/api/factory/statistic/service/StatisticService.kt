@@ -312,19 +312,6 @@ class StatisticService(
         return objectList.toMap()
     }
 
-    override fun putNormal(obj: NormalInput): NormalInput {
-
-        val objectEnt = AssortmentEntity.findById(obj.objId)
-            ?: throw GeneralError("Сортамент не найден")
-
-        NormalEntity.new {
-            this.obj = objectEnt
-            this.count = obj.count
-            this.date = obj.date
-        }
-
-        return obj
-    }
 
 
 }

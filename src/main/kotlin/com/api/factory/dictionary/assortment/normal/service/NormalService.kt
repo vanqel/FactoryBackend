@@ -5,10 +5,12 @@ import com.api.factory.dictionary.assortment.models.AssortmentEntity
 import com.api.factory.dictionary.assortment.normal.models.NormalEntity
 import com.api.factory.dictionary.assortment.normal.dto.NormalInput
 import com.api.factory.dictionary.assortment.normal.dto.NormalOutputFull
+import org.springframework.stereotype.Service
 
+@Service
 class NormalService {
     fun getAllNormal(): List<NormalOutputFull> {
-       return NormalEntity.all().toList().groupBy {
+        return NormalEntity.all().toList().groupBy {
             it.obj
         }.map {
             it.value.maxBy { d -> d.date }
@@ -18,19 +20,25 @@ class NormalService {
                 count = it.count,
                 date = it.date
             )
-       }
+        }
     }
 
-     fun putNormal(obj: NormalInput): NormalInput {
+    fun putNormal(obj: NormalInput): NormalOutputFull {
         val objectEnt = AssortmentEntity.findById(obj.objId)
             ?: throw GeneralError("Сортамент не найден")
 
-        NormalEntity.new {
+        val n = NormalEntity.new {
             this.obj = objectEnt
             this.count = obj.count
             this.date = obj.date
         }
 
-        return obj
+        return n.let {
+            NormalOutputFull(
+                objId = it.obj.toDTO(),
+                count = it.count,
+                date = it.date
+            )
+        }
     }
 }
