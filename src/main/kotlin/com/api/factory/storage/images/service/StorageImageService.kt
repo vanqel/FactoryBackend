@@ -2,6 +2,7 @@ package com.api.factory.storage.images.service
 
 import com.api.factory.auth.errors.GeneralError
 import com.api.factory.auth.errors.ValidationError
+import com.api.factory.storage.core.service.FileOutput
 import com.api.factory.storage.images.dto.CreateImageLink
 import com.api.factory.storage.images.repository.IStorageImageRepository
 import com.api.factory.storage.core.service.MinioService
@@ -13,15 +14,15 @@ class StorageImageService(
     val repo: IStorageImageRepository,
     val minioService: MinioService,
 ) : IStorageImageService {
-    override fun putLink(image: CreateImageLink): String {
+    override fun putLink(image: CreateImageLink): FileOutput {
         val find = repo.getLink(image)
         return if (find == null) {
             try {
-                val url = minioService.getObject(image.image)?.url
+                val url = minioService.getObject(image.image)
                 if (url != null) {
                     repo.addLink(image)
                     url
-                } else minioService.getObject(image.image)!!.url!!
+                } else minioService.getObject(image.image)!!
             } catch (e: Exception) {
                 throw GeneralError("Ошибка загрузки изображения")
             }
@@ -29,11 +30,11 @@ class StorageImageService(
 
     }
 
-    override fun getListImages(parentKey: UUID): List<String?> {
+    override fun getImageByParent(parentKey: UUID): FileOutput {
         return try {
             repo.getListImages(parentKey).filterNotNull().map {
-                minioService.getObject(it.id.value)?.url
-            }.ifEmpty { throw ValidationError("Изображение не найдено") }
+                minioService.getObject(it.id.value)
+            }.first() ?: run { throw ValidationError("Изображение не найдено") }
         } catch (e: Exception) {
             throw GeneralError("Ошибка загрузки изображения")
         }

@@ -8,9 +8,8 @@ data class ReportZMKCreateInput(
     val assortment: Long,
     val type: TypeFoundation,
     val date: LocalDate,
-    val count: Double,
+    val count: Long,
     val keyImage: String,
-    val image: String
 )
 
 

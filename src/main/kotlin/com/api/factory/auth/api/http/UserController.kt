@@ -33,10 +33,9 @@ class UserController(
 
     @PostMapping("blockUser")
     fun blockUser(
-        @RequestParam username: String? = null,
-        @RequestParam userId: Long? = null,
+        @RequestParam userId: Long,
     ): ResponseEntity<UserBlockOutput> {
-        return ok(userService.blockUser(username, userId).getOrThrow())
+        return ok(userService.blockUser( userId).getOrThrow())
     }
 
     @PostMapping("updatePassword")

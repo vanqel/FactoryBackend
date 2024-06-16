@@ -15,12 +15,20 @@ class UserServiceImpl(
     val usersRepository: UsersRepository,
 ) : IUserService {
 
-    fun validate() {
-        val roles = SecurityContextHolder.getContext().authentication.authorities.map {
-            it.authority
-        }.first()
 
-        if ((roles !in listOf(RolesEnum.ADMIN.name, RolesEnum.DIMK.name))
+    fun getRole() = SecurityContextHolder.getContext().authentication.authorities.map {
+        it.authority
+    }.first()
+
+    fun validate() {
+        if ((getRole() !in listOf(RolesEnum.ADMIN.name, RolesEnum.DIMK.name))
+        ) {
+            throw AuthError()
+        }
+    }
+
+    fun validateB(r: String) {
+        if ((r in listOf(RolesEnum.ADMIN.name, RolesEnum.DIMK.name))
         ) {
             throw AuthError()
         }
@@ -36,6 +44,10 @@ class UserServiceImpl(
             return Result.error(AuthError())
         }
 
+        if (body.role == RolesEnum.DIMK && getRole() != RolesEnum.ADMIN.name) {
+            return Result.error(AuthError())
+        }
+
         val user: UserOutput = usersRepository.save(body)
 
         return Result.ok(user)
@@ -44,42 +56,42 @@ class UserServiceImpl(
     override fun updateUser(body: UserUpdateInput): Result<UserOutput> {
         validate()
 
+        val usr = usersRepository.findUserById(body.id)!!
+
+        if (usr.roles.first().name == RolesEnum.ADMIN) {
+            return Result.error(AuthError())
+        }
+
+        if (usr.roles.first().name == RolesEnum.DIMK && getRole() != RolesEnum.ADMIN.name) {
+            return Result.error(AuthError())
+        }
+
         val user: UserOutput = usersRepository.updateUser(body)
 
         return Result.ok(user)
     }
 
     override fun blockUser(
-        username: String?,
-        userId: Long?,
+        userId: Long,
     ): Result<UserBlockOutput> {
 
         validate()
 
-        if (username.isNull() && userId.isNull()) {
-            return Result.error(ValidationError("Такого пользователя не существует"))
+        val user = usersRepository.findUserById(userId)!!
+
+        if (user.roles.first().name == RolesEnum.ADMIN) {
+            return Result.error(AuthError())
         }
 
-        val result: UserBlockOutput? =
-            if (username.isNotNull() &&
-                userId.isNotNull() &&
-                (usersRepository.compareIdAndUsername(username!!, userId!!)) // Переделать
-            ) {
-                usersRepository.blockUser(userId)
-            } else {
-                if (username.isNull()) {
-                    usersRepository.findUserById(userId!!)?.let {
-                        usersRepository.blockUser(it.id.value)
-                    }
-                } else {
-                    usersRepository.findUserByUsername(username!!)?.let {
-                        usersRepository.blockUser(it.id.value)
-                    }
-                }
-            }
-        return result?.let {
-            Result.ok(it)
-        } ?: Result.error(ValidationError("Такого пользователя не существует"))
+        if (user.roles.first().name == RolesEnum.DIMK && getRole() != RolesEnum.ADMIN.name) {
+            return Result.error(AuthError())
+        }
+
+        return try {
+            Result.ok(usersRepository.blockUser(userId))
+        } catch (e: Exception) {
+            Result.error(ValidationError("Ошибка удаления пользователя"))
+        }
     }
 
     override fun updatePassword(body: UserChangePasswordInput): Result<UserChangePasswordOutput> {
@@ -91,7 +103,7 @@ class UserServiceImpl(
     }
 
     override fun getUsers(): Result<List<UserOutput?>> {
-        return Result.ok(usersRepository.all())
+        return Result.ok(usersRepository.all().filter { !it.isBlocked })
     }
 
     override fun getUser(id: Long): Result<UserOutput?> {

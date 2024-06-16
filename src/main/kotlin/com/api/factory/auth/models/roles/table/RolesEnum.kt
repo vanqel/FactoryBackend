@@ -4,7 +4,7 @@ object ConstantRoles {
     const val ADMIN = "ADMIN"
     const val DIMK = "Руководитель ДИМК"
     const val N_PLACE = "Начальник участка"
-    const val N_EXPORT = "Начальник участка"
+    const val N_EXPORT = "Прораб по отгрузке"
 }
 
 enum class RolesEnum(

@@ -8,6 +8,6 @@ data class ReportZMKUpdateInput(
     val assortment: Long,
     val type: TypeFoundation,
     val date: LocalDate,
-    val count: Double,
+    val count: Long,
     val image: String
 )

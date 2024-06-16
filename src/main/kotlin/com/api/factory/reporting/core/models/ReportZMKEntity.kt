@@ -1,5 +1,6 @@
 package com.api.factory.reporting.core.models
 
+import com.api.factory.statistic.models.NormalEntity
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -15,6 +16,6 @@ class ReportZMKEntity(id: EntityID<Long>): LongEntity(id) {
     var count by ReportZMKTable.count
     var img by ReportZMKTable.img
     var type by ReportZMKTable.type
-
+    var normal by ReportZMKTable.normal
 
 }

@@ -1,10 +1,12 @@
 package com.api.factory.statistic.api.http
 
 import com.api.factory.dictionary.objects.dto.ObjectOutput
+import com.api.factory.statistic.dto.NormalInput
 import com.api.factory.statistic.dto.StatsByTypeSum
 import com.api.factory.statistic.dto.StatsObjectDayMonthYear
 import com.api.factory.statistic.dto.StatsTypeOutput
 import com.api.factory.statistic.service.IStatisticService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -15,7 +17,7 @@ import java.time.LocalDate
 @RestController
 @RequestMapping("/api/stats")
 class StatsController(override val service: IStatisticService) : IStatsController {
-
+    @SecurityRequirement(name = "jwt")
     @GetMapping("personal/day")
     override fun getPersonalRatesByDay(
         @RequestParam date: LocalDate,
@@ -87,5 +89,9 @@ class StatsController(override val service: IStatisticService) : IStatsControlle
         @RequestParam date: LocalDate,
     ): Map<ObjectOutput, StatsObjectDayMonthYear> {
         return service.getStatisticDayMonthTotal(date)
+    }
+
+    override fun addNormal(body: NormalInput) {
+        TODO("Not yet implemented")
     }
 }

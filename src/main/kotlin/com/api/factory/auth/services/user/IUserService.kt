@@ -11,7 +11,7 @@ import com.api.factory.extensions.Result
 interface IUserService {
     fun registerUser(body: UserCreateInput): Result<UserOutput>
     fun updateUser(body: UserUpdateInput): Result<UserOutput>
-    fun blockUser(username: String?, userId: Long?): Result<UserBlockOutput>
+    fun blockUser(userId: Long): Result<UserBlockOutput>
     fun updatePassword(body: UserChangePasswordInput): Result<UserChangePasswordOutput>
     fun getUsers(): Result<List<UserOutput?>>
     fun getUser(id: Long): Result<UserOutput?>

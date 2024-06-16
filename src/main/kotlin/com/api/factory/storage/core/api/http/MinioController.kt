@@ -2,6 +2,8 @@ package com.api.factory.storage.core.api.http
 
 import com.api.factory.storage.core.service.FileOutput
 import com.api.factory.storage.core.service.MinioService
+import com.api.factory.storage.images.dto.CreateImageLink
+import com.api.factory.storage.images.service.IStorageImageService
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
@@ -10,6 +12,7 @@ import java.util.*
 @RequestMapping("api/storage")
 class MinioController(
     val service: MinioService,
+    val imgService: IStorageImageService,
 ) {
 
     @GetMapping()
@@ -21,9 +24,16 @@ class MinioController(
 
     @PostMapping
     fun addObject(
+        @RequestParam uuid: String,
         @RequestParam file: MultipartFile,
     ): FileOutput {
-        return service.addObject(file)
+        val uuidImage = service.addObject(file)
+        imgService.putLink(
+            CreateImageLink(
+                UUID.fromString(uuid), uuidImage.uuid
+            )
+        )
+        return uuidImage
     }
 
     @DeleteMapping

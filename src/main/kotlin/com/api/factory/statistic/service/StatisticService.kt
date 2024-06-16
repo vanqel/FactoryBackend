@@ -1,17 +1,22 @@
 package com.api.factory.statistic.service
 
 import com.api.factory.auth.errors.AuthError
+import com.api.factory.auth.errors.GeneralError
 import com.api.factory.auth.repository.user.IUsersRepository
+import com.api.factory.dictionary.assortment.models.AssortmentEntity
 import com.api.factory.dictionary.objects.dto.ObjectOutput
+import com.api.factory.dictionary.objects.models.ObjectEntity
 import com.api.factory.dictionary.objects.service.IObjectService
 import com.api.factory.reporting.core.dto.ReportZMKOutput
 import com.api.factory.reporting.core.enums.TypeFoundation
 import com.api.factory.reporting.core.models.ReportZMKEntity
 import com.api.factory.reporting.core.models.ReportZMKTable
 import com.api.factory.reporting.core.service.IReportService
+import com.api.factory.statistic.dto.NormalInput
 import com.api.factory.statistic.dto.StatsByTypeSum
 import com.api.factory.statistic.dto.StatsObjectDayMonthYear
 import com.api.factory.statistic.dto.StatsTypeOutput
+import com.api.factory.statistic.models.NormalEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -41,11 +46,20 @@ class StatisticService(
         val prevStats: MutableMap<TypeFoundation, Double> =
             TypeFoundation.entries.associateWith { 0.0 }.toMutableMap()
 
+
+        val actualStatsNormal: MutableMap<TypeFoundation, Double> =
+            TypeFoundation.entries.associateWith { 0.0 }.toMutableMap()
+        val prevStatsNormal: MutableMap<TypeFoundation, Double> =
+            TypeFoundation.entries.associateWith { 0.0 }.toMutableMap()
+
         actual.groupBy {
             it.type
         }.forEach { e ->
             actualStats[e.key] = e.value.sumOf {
-                it.count
+                it.getTotalWeight()
+            }
+            actualStatsNormal[e.key] = e.value.sumOf {
+                it.getTotalWeightNormal()
             }
         }
 
@@ -53,7 +67,10 @@ class StatisticService(
             it.type
         }.forEach { e ->
             prevStats[e.key] = e.value.sumOf {
-                it.count
+                it.getTotalWeight()
+            }
+            prevStatsNormal[e.key] = e.value.sumOf {
+                it.getTotalWeightNormal()
             }
         }
 
@@ -63,7 +80,9 @@ class StatisticService(
                 actual = actualStats[it]!!,
                 prev = prevStats[it]!!,
                 count = actualStats[it]!! - prevStats[it]!!,
-                isGood = actualStats[it]!! >= prevStats[it]!!
+                isGood = actualStats[it]!! >= prevStats[it]!!,
+                normalToday = actualStatsNormal[it]!!,
+                normalPrev = prevStatsNormal[it]!!
             )
         }
     }
@@ -73,12 +92,16 @@ class StatisticService(
         actual: List<ReportZMKOutput>,
     ): List<StatsByTypeSum> {
         val conc = TypeFoundation.entries.associateWith { 0.0 }.toMutableMap()
+        val normal = TypeFoundation.entries.associateWith { 0.0 }.toMutableMap()
 
         actual.groupBy {
             it.type
         }.forEach { e ->
             conc[e.key] = e.value.sumOf {
-                it.count
+                it.getTotalWeight()
+            }
+            normal[e.key] = e.value.sumOf {
+                it.getTotalWeightNormal()
             }
         }
 
@@ -86,6 +109,7 @@ class StatisticService(
             StatsByTypeSum(
                 type = it,
                 count = conc[it]!!,
+                normal = normal[it]!!
             )
         }
     }
@@ -269,7 +293,7 @@ class StatisticService(
         val month = getRatesByDatestamp(date.plusDays(1), date.minusMonths(1))
         val year = getRatesByDatestamp(date.plusDays(1), date.minusYears(1))
 
-        objectList.forEach { (t, u) ->
+        objectList.forEach { (t, _) ->
             objectList[t] =
                 StatsObjectDayMonthYear(
                     t.name,
@@ -279,6 +303,20 @@ class StatisticService(
                 )
         }
         return objectList.toMap()
+    }
+
+    override fun putNormal(obj: NormalInput): NormalInput {
+
+        val objectEnt = AssortmentEntity.findById(obj.objId)
+            ?: throw GeneralError("Сортамент не найден")
+
+        NormalEntity.new {
+            this.obj = objectEnt
+            this.count = obj.count
+            this.date = obj.date
+        }
+
+        return obj
     }
 
 

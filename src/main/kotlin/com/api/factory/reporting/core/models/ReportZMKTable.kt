@@ -5,6 +5,7 @@ import com.api.factory.auth.models.users.table.UserTable
 import com.api.factory.dictionary.assortment.models.AssortmentTable
 import com.api.factory.dictionary.objects.models.ObjectsTable
 import com.api.factory.reporting.core.enums.TypeFoundation
+import com.api.factory.statistic.models.NormalTable
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ReferenceOption
@@ -17,7 +18,8 @@ object ReportZMKTable : LongIdTable("zmk_reporting") {
     val obj = reference("object_id", ObjectsTable, onDelete = ReferenceOption.CASCADE)
     val assortment = reference("sortment_id", AssortmentTable, onDelete = ReferenceOption.CASCADE)
     val date: Column<LocalDate> = date("date")
-    val count: Column<Double> = double("count")
+    val count: Column<Long> = long("count")
     val img = uuid("image_key")
     val type = enumeration("type", TypeFoundation::class)
+    val normal = reference("normal_id", NormalTable, onDelete = ReferenceOption.CASCADE).nullable()
 }

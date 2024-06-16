@@ -1,6 +1,7 @@
 package com.api.factory.statistic.api.http
 
 import com.api.factory.dictionary.objects.dto.ObjectOutput
+import com.api.factory.statistic.dto.NormalInput
 import com.api.factory.statistic.dto.StatsByTypeSum
 import com.api.factory.statistic.dto.StatsObjectDayMonthYear
 import com.api.factory.statistic.dto.StatsTypeOutput
@@ -21,4 +22,6 @@ interface IStatsController {
     fun getRatesByObject(objId: Long, dateStart: LocalDate, dateEnd: LocalDate): Map<ObjectOutput, List<StatsByTypeSum>>
     fun getRatesByDatestamp(dateStart: LocalDate, dateEnd: LocalDate): Map<ObjectOutput, List<StatsByTypeSum>>
     fun getStatisticDayMonthTotal(date: LocalDate): Map<ObjectOutput, StatsObjectDayMonthYear>
+
+    fun addNormal(body: NormalInput)
 }

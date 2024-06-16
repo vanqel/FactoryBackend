@@ -2,6 +2,7 @@ package com.api.factory.reporting.core.service
 
 import com.api.factory.auth.errors.AuthError
 import com.api.factory.auth.errors.GeneralError
+import com.api.factory.auth.models.roles.table.RolesEnum
 import com.api.factory.auth.models.users.UserEntity
 import com.api.factory.auth.repository.user.IUsersRepository
 import com.api.factory.config.RemoveOutput
@@ -13,6 +14,8 @@ import com.api.factory.reporting.core.dto.ReportZMKOutput
 import com.api.factory.reporting.core.dto.ReportZMKUpdateInput
 import com.api.factory.reporting.core.models.ReportZMKEntity
 import com.api.factory.reporting.core.models.ReportZMKTable
+import com.api.factory.statistic.models.NormalEntity
+import com.api.factory.statistic.models.NormalTable
 import com.api.factory.storage.images.dto.CreateImageLink
 import com.api.factory.storage.images.service.IStorageImageService
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -40,19 +43,24 @@ class ReportService(
                     .name
             ) ?: throw AuthError()
 
+    override fun saveBatch(inp: List<ReportZMKCreateInput>): Boolean {
+        return runCatching {
+            inp.forEach {
+                save(it)
+            }
+            true
+        }.getOrElse {
+            throw it
+        }
+    }
 
     override fun save(inputReport: ReportZMKCreateInput): ReportZMKOutput {
-
-        imageService.putLink(
-            CreateImageLink(
-                parentKey = UUID.fromString(inputReport.image),
-                image = UUID.fromString(inputReport.keyImage)
-            )
-        )
         val u = getUser()
         val o = objectsRepository.getObjectById(inputReport.obj)
         val a = assortRepository.getAssortmentById(inputReport.assortment)
-
+        val n = NormalEntity.find {
+            NormalTable.obj eq a.id
+        }.first()
         val report = runCatching {
             ReportZMKEntity.new {
                 user = u.id
@@ -63,6 +71,7 @@ class ReportService(
                 count = inputReport.count
                 img = UUID.fromString(inputReport.keyImage)
                 type = inputReport.type
+                normal = n.id
             }
         }.getOrElse {
             imageService.deleteLinkAll(UUID.fromString(inputReport.keyImage))
@@ -76,9 +85,10 @@ class ReportService(
             a.toDTO(),
             report.type,
             report.date,
-            report.count
+            report.count,
+            n.count,
+            imageService.getImageByParent(UUID.fromString(inputReport.keyImage))
         )
-
 
     }
 
@@ -87,7 +97,9 @@ class ReportService(
         val u = UserEntity.findById(report.user)
         val o = objectsRepository.getObjectById(report.obj.value)
         val a = assortRepository.getAssortmentById(report.assortment.value)
-
+        val n = NormalEntity.find {
+            NormalTable.obj eq a.id
+        }.maxByOrNull { it.date }
         return ReportZMKOutput(
             report.id.value,
             u?.toDTO(),
@@ -96,7 +108,9 @@ class ReportService(
             a.toDTO(),
             report.type,
             report.date,
-            report.count
+            report.count,
+            n?.count ?: 1,
+            imageService.getImageByParent(report.img)
         )
     }
 
@@ -118,7 +132,7 @@ class ReportService(
         } ?: throw GeneralError("Отчет не найден")
 
         imageService.deleteLinkAll(report.img)
-        imageService.putLink(CreateImageLink(report.img,UUID.fromString(inputReport.image)))
+        imageService.putLink(CreateImageLink(report.img, UUID.fromString(inputReport.image)))
 
         return getDTOByOutput(report)
     }
@@ -127,9 +141,20 @@ class ReportService(
         return (ReportZMKTable.deleteWhere { ReportZMKTable.id eq id } == 1).getResponse()
     }
 
+
     override fun getAll(): List<ReportZMKOutput> {
-        return ReportZMKEntity.all().map {
-            getDTOByOutput(it)
+        val r = SecurityContextHolder.getContext().authentication.authorities.first().authority
+        return if ((r) in setOf(RolesEnum.ADMIN.name, RolesEnum.DIMK.name)) {
+            ReportZMKEntity.all().map {
+                getDTOByOutput(it)
+            }
+        } else {
+            ReportZMKEntity.find {
+                ReportZMKTable.user eq getUser().id
+            }.map {
+                getDTOByOutput(it)
+            }
         }
+
     }
 }
