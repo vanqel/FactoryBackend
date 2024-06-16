@@ -5,6 +5,7 @@ import com.api.factory.reporting.core.dto.ReportZMKCreateInput
 import com.api.factory.reporting.core.dto.ReportZMKOutput
 import com.api.factory.reporting.core.dto.ReportZMKUpdateInput
 import com.api.factory.reporting.core.models.ReportZMKEntity
+import java.time.LocalDate
 
 interface IReportService {
     fun getDTOByOutput(report: ReportZMKEntity): ReportZMKOutput
@@ -15,4 +16,5 @@ interface IReportService {
     fun getById(id: Long): ReportZMKOutput
     fun delete(id: Long): RemoveOutput
     fun getAll(): List<ReportZMKOutput>
+    fun getByDate(date: LocalDate): List<ReportZMKOutput>
 }

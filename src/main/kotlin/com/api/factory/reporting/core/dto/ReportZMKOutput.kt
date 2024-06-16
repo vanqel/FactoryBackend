@@ -18,7 +18,7 @@ data class ReportZMKOutput(
     val date: LocalDate,
     val count: Long,
     val normal: Long = 1,
-    val image: FileOutput
+    val image: FileOutput?
 ) {
     fun getTotalWeight() = count*assortment.count
 

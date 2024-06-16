@@ -19,10 +19,12 @@ import com.api.factory.statistic.models.NormalTable
 import com.api.factory.storage.images.dto.CreateImageLink
 import com.api.factory.storage.images.service.IStorageImageService
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.util.*
 
 @Repository
@@ -87,7 +89,11 @@ class ReportService(
             report.date,
             report.count,
             n.count,
-            imageService.getImageByParent(UUID.fromString(inputReport.keyImage))
+            try {
+                imageService.getImageByParent(UUID.fromString(inputReport.keyImage))
+            }catch (e: Exception){
+                null
+            }
         )
 
     }
@@ -110,7 +116,11 @@ class ReportService(
             report.date,
             report.count,
             n?.count ?: 1,
-            imageService.getImageByParent(report.img)
+            try {
+                imageService.getImageByParent(report.img)
+            }catch (e: Exception){
+                null
+            }
         )
     }
 
@@ -155,6 +165,22 @@ class ReportService(
                 getDTOByOutput(it)
             }
         }
+    }
 
+    override fun getByDate(date: LocalDate): List<ReportZMKOutput> {
+        val r = SecurityContextHolder.getContext().authentication.authorities.first().authority
+        return if ((r) in setOf(RolesEnum.ADMIN.name, RolesEnum.DIMK.name)) {
+            ReportZMKEntity.find {
+                ReportZMKTable.date eq date
+            }.map {
+                getDTOByOutput(it)
+            }
+        } else {
+            ReportZMKEntity.find {
+                (ReportZMKTable.user eq getUser().id).and(ReportZMKTable.date eq date)
+            }.map {
+                getDTOByOutput(it)
+            }
+        }
     }
 }

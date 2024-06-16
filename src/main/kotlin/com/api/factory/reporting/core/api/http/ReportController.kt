@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDate
 
 @RestController
 @RequestMapping("/api/reporting")
@@ -17,6 +18,10 @@ import org.springframework.web.bind.annotation.*
 class ReportController(
     val reportService: IReportService,
 ) {
+    @GetMapping
+    fun getByDate(
+        @RequestParam date: LocalDate,
+    ) = reportService.getByDate(date)
 
     @GetMapping()
     fun getAll(): List<ReportZMKOutput> =
