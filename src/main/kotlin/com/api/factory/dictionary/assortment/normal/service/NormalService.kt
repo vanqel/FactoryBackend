@@ -6,6 +6,7 @@ import com.api.factory.dictionary.assortment.normal.models.NormalEntity
 import com.api.factory.dictionary.assortment.normal.dto.NormalInput
 import com.api.factory.dictionary.assortment.normal.dto.NormalOutputFull
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 @Service
 class NormalService {
@@ -30,7 +31,7 @@ class NormalService {
         val n = NormalEntity.new {
             this.obj = objectEnt
             this.count = obj.count
-            this.date = obj.date
+            this.date = LocalDate.now()
         }
 
         return n.let {

@@ -1,6 +1,7 @@
 package com.api.factory.auth.repository.user
 
 import com.api.factory.auth.dto.users.*
+import com.api.factory.auth.models.roles.RoleEntity
 import com.api.factory.auth.models.users.UserEntity
 import com.api.factory.auth.models.users.UsersDepartmentTable
 import com.api.factory.auth.models.users.table.UserTable
@@ -33,7 +34,7 @@ class UsersRepository(
                     }
                     UsersRolesTable.insert {
                         it[user] = u.id
-                        it[role] = 2
+                        it[role] = RoleEntity.findById(body.role.id)!!.id
                     }
                     commit()
                     u
