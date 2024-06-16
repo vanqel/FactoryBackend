@@ -1,0 +1,41 @@
+server:
+  port: 8099
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+spring:
+
+  security:
+    user:
+      name: "factory_admin"
+      password: "2mwvVl9mFsSno4Zm"
+      roles: "ADMIN"
+
+  banner:
+    location: banner.txt
+  config:
+    additional-location: file:.env
+  datasource:
+    url: jdbc:postgresql://109.120.187.242:4499/zavod
+    username: zavod_root
+    password: zavod_adm_root
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+jwt-security:
+  secret: 'dASDASdsadasdsadhjksahdbksjahddasdahakDJHsakjhdJKALhdksajhdlKJSAHdkjhASLJKDha'
+  expirationTime: 600 #minutes
+  expirationTimeRefresh: 6000 #minutes
+  expirationTimeTemporary: 5 #minutes
+
+
+minio:
+  url: http://109.120.187.242
+  host: 9000
+  access-key: burah_root_minio
+  secret-key: burah_root_pwd_minio
+  bucket-name: zavod-storage
+  max-size: 5

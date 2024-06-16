@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: gamestore
+      POSTGRES_USER: vgtu
+      POSTGRES_PASSWORD: vgtu
+  app:
+    image: openjdk:21
+    volumes:
+      - ./build/libs/GameStoreBackendKotlin-0.0.2-SNAPSHOT.jar:/app/app.jar
+    ports:
+      - 8080:8080
+    command: java -jar /app/app.jar
