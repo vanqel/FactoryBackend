@@ -14,8 +14,8 @@ import com.api.factory.reporting.core.dto.ReportZMKOutput
 import com.api.factory.reporting.core.dto.ReportZMKUpdateInput
 import com.api.factory.reporting.core.models.ReportZMKEntity
 import com.api.factory.reporting.core.models.ReportZMKTable
-import com.api.factory.statistic.models.NormalEntity
-import com.api.factory.statistic.models.NormalTable
+import com.api.factory.dictionary.assortment.normal.models.NormalEntity
+import com.api.factory.dictionary.assortment.normal.models.NormalTable
 import com.api.factory.storage.images.dto.CreateImageLink
 import com.api.factory.storage.images.service.IStorageImageService
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -141,8 +141,6 @@ class ReportService(
             it.type = inputReport.type
         } ?: throw GeneralError("Отчет не найден")
 
-        imageService.deleteLinkAll(report.img)
-        imageService.putLink(CreateImageLink(report.img, UUID.fromString(inputReport.image)))
 
         return getDTOByOutput(report)
     }

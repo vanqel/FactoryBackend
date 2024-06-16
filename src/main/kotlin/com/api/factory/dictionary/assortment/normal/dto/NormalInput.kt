@@ -1,4 +1,4 @@
-package com.api.factory.statistic.dto
+package com.api.factory.dictionary.assortment.normal.dto
 
 import java.time.LocalDate
 

@@ -5,7 +5,7 @@ import com.api.factory.auth.models.users.table.UserTable
 import com.api.factory.dictionary.assortment.models.AssortmentTable
 import com.api.factory.dictionary.objects.models.ObjectsTable
 import com.api.factory.reporting.core.enums.TypeFoundation
-import com.api.factory.statistic.models.NormalTable
+import com.api.factory.dictionary.assortment.normal.models.NormalTable
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ReferenceOption

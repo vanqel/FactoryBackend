@@ -2,21 +2,21 @@ package com.api.factory.statistic.service
 
 import com.api.factory.auth.errors.AuthError
 import com.api.factory.auth.errors.GeneralError
+import com.api.factory.auth.models.department.DepartmentEntity
 import com.api.factory.auth.repository.user.IUsersRepository
 import com.api.factory.dictionary.assortment.models.AssortmentEntity
 import com.api.factory.dictionary.objects.dto.ObjectOutput
-import com.api.factory.dictionary.objects.models.ObjectEntity
 import com.api.factory.dictionary.objects.service.IObjectService
 import com.api.factory.reporting.core.dto.ReportZMKOutput
 import com.api.factory.reporting.core.enums.TypeFoundation
 import com.api.factory.reporting.core.models.ReportZMKEntity
 import com.api.factory.reporting.core.models.ReportZMKTable
 import com.api.factory.reporting.core.service.IReportService
-import com.api.factory.statistic.dto.NormalInput
+import com.api.factory.dictionary.assortment.normal.dto.NormalInput
 import com.api.factory.statistic.dto.StatsByTypeSum
 import com.api.factory.statistic.dto.StatsObjectDayMonthYear
 import com.api.factory.statistic.dto.StatsTypeOutput
-import com.api.factory.statistic.models.NormalEntity
+import com.api.factory.dictionary.assortment.normal.models.NormalEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -223,6 +223,13 @@ class StatisticService(
     override fun getRatesByMonthByDepartment(
         departId: Long, date: LocalDate,
     ): Map<ObjectOutput, List<StatsByTypeSum>> {
+
+       DepartmentEntity.findById(departId)?.let {
+           if (!it.foundation){
+               throw GeneralError("Отдела не является производственным")
+           }
+       } ?: throw GeneralError("Отдел не найден")
+
         val today = ReportZMKEntity.find {
             ReportZMKTable.date less date.plusDays(1)
             ReportZMKTable.date greater date.minusMonths(1)

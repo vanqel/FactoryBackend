@@ -1,6 +1,5 @@
 package com.api.factory.reporting.core.models
 
-import com.api.factory.statistic.models.NormalEntity
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

@@ -1,4 +1,4 @@
-package com.api.factory.statistic.models
+package com.api.factory.dictionary.assortment.normal.models
 
 import com.api.factory.dictionary.assortment.models.AssortmentEntity
 import org.jetbrains.exposed.dao.LongEntity
