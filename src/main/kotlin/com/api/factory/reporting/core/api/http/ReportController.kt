@@ -18,7 +18,7 @@ import java.time.LocalDate
 class ReportController(
     val reportService: IReportService,
 ) {
-    @GetMapping
+    @GetMapping("/d")
     fun getByDate(
         @RequestParam date: LocalDate,
     ) = reportService.getByDate(date)

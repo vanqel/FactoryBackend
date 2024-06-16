@@ -7,11 +7,8 @@ import com.api.factory.statistic.dto.StatsObjectDayMonthYear
 import com.api.factory.statistic.dto.StatsTypeOutput
 import com.api.factory.statistic.service.IStatisticService
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import org.springframework.web.bind.annotation.*
 
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDate
 
 @RestController
@@ -91,7 +88,8 @@ class StatsController(override val service: IStatisticService) : IStatsControlle
         return service.getStatisticDayMonthTotal(date)
     }
 
-    override fun addNormal(body: NormalInput) {
-        TODO("Not yet implemented")
+    @PostMapping("normal")
+    override fun addNormal(body: NormalInput): NormalInput {
+        return service.putNormal(body)
     }
 }

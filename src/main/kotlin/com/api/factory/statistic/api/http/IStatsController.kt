@@ -23,5 +23,5 @@ interface IStatsController {
     fun getRatesByDatestamp(dateStart: LocalDate, dateEnd: LocalDate): Map<ObjectOutput, List<StatsByTypeSum>>
     fun getStatisticDayMonthTotal(date: LocalDate): Map<ObjectOutput, StatsObjectDayMonthYear>
 
-    fun addNormal(body: NormalInput)
+    fun addNormal(body: NormalInput): NormalInput
 }
