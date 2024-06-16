@@ -295,7 +295,7 @@ class StatisticService(
 
         val today = getRatesByDatestamp(date.plusDays(1), date)
         val month = getRatesByDatestamp(date.plusDays(1), date.minusMonths(1))
-        val year = getRatesByDatestamp(date.plusDays(1), date.minusYears(1))
+        val year = getRatesByDatestamp(date.plusDays(1), date.minusYears(1000))
 
         objectList.forEach { (t, _) ->
             objectList[t] =

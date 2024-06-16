@@ -1,6 +1,7 @@
 package com.api.factory.reporting.files.service
 
 import com.api.factory.reporting.config.XLSXMultipartFile
+import com.api.factory.reporting.core.enums.TypeFoundation
 import com.api.factory.reporting.core.service.IReportService
 import com.api.factory.statistic.service.IStatisticService
 import org.apache.poi.ss.usermodel.IndexedColors
@@ -71,8 +72,67 @@ class ReportXlsxService(
 
     }
 
-    override fun generateReportDayMonthYear(date: LocalDate): MultipartFile {
-        TODO("Not yet implemented")
+    override fun generateReportDayMonthYear(date: LocalDate): XLSXMultipartFile {
+        val data = statsService.getStatisticDayMonthTotal(date)
+        val workbook = XSSFWorkbook()
+        val sheet = workbook.createSheet("Report")
+
+        val headerRow = sheet.createRow(0)
+        val headers = listOf(
+            "Объект",
+
+            "Выработка отдела ${TypeFoundation.Assembly.desription} за сутки",
+            "Выработка отдела ${TypeFoundation.Welding.desription} за сутки",
+            "Выработка отдела ${TypeFoundation.Loading.desription} за сутки",
+
+            "Выработка отдела ${TypeFoundation.Assembly.desription} за месяц",
+            "Выработка отдела ${TypeFoundation.Welding.desription} за месяц",
+            "Выработка отдела ${TypeFoundation.Loading.desription} за месяц",
+
+            "Выработка отдела ${TypeFoundation.Assembly.desription} за всё время",
+            "Выработка отдела ${TypeFoundation.Welding.desription} за всё время",
+            "Выработка отдела ${TypeFoundation.Loading.desription} за всё время",
+        )
+
+        // Create header cells
+        for ((index, header) in headers.withIndex()) {
+            val cell = headerRow.createCell(index)
+            cell.setCellValue(header)
+            cell.cellStyle = createHeaderCellStyle(workbook)
+        }
+
+        data.entries.forEachIndexed { rowIndex, d ->
+            val row = sheet.createRow(rowIndex + 1)
+            row.createCell(0).setCellValue(d.key.name)
+
+            row.createCell(1).setCellValue(d.value.day.firstOrNull { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
+            row.createCell(2).setCellValue(d.value.day.firstOrNull { it.type == TypeFoundation.Welding }?.count ?: 0.0)
+            row.createCell(3).setCellValue(d.value.day.firstOrNull { it.type == TypeFoundation.Loading }?.count ?: 0.0)
+
+            row.createCell(4).setCellValue(d.value.month.firstOrNull { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
+            row.createCell(5).setCellValue(d.value.month.firstOrNull { it.type == TypeFoundation.Welding }?.count ?: 0.0)
+            row.createCell(6).setCellValue(d.value.month.firstOrNull { it.type == TypeFoundation.Loading }?.count ?: 0.0)
+
+            row.createCell(7).setCellValue(d.value.year.firstOrNull { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
+            row.createCell(8).setCellValue(d.value.year.firstOrNull { it.type == TypeFoundation.Welding }?.count ?: 0.0)
+            row.createCell(9).setCellValue(d.value.year.firstOrNull { it.type == TypeFoundation.Loading }?.count ?: 0.0)
+
+        }
+
+
+
+        for (i in headers.indices) {
+            sheet.autoSizeColumn(i)
+        }
+
+        val outputStream = ByteArrayOutputStream()
+        workbook.write(outputStream)
+        workbook.close()
+
+        val inputStream: InputStream = ByteArrayInputStream(outputStream.toByteArray())
+
+        return XLSXMultipartFile(date, "full", inputStream)
+
     }
 
     private fun createHeaderCellStyle(workbook: XSSFWorkbook): XSSFCellStyle? {
@@ -85,7 +145,6 @@ class ReportXlsxService(
         style.fillForegroundColor = IndexedColors.DARK_BLUE.index
         return style
     }
-
 
 
     override fun generateFullReport(dateStart: LocalDate, dateEnd: LocalDate): MultipartFile {

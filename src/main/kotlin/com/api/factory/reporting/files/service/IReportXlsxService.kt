@@ -8,7 +8,7 @@ interface IReportXlsxService {
 
     fun generateReport(date: LocalDate): XLSXMultipartFile
 
-    fun generateReportDayMonthYear(date: LocalDate): MultipartFile
+    fun generateReportDayMonthYear(date: LocalDate): XLSXMultipartFile
 
     fun generateFullReport(dateStart: LocalDate, dateEnd: LocalDate): MultipartFile
 
