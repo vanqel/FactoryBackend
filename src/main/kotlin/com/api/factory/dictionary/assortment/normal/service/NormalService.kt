@@ -6,9 +6,11 @@ import com.api.factory.dictionary.assortment.normal.models.NormalEntity
 import com.api.factory.dictionary.assortment.normal.dto.NormalInput
 import com.api.factory.dictionary.assortment.normal.dto.NormalOutputFull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 
 @Service
+@Transactional
 class NormalService {
     fun getAllNormal(): List<NormalOutputFull> {
         return NormalEntity.all().toList().groupBy {
