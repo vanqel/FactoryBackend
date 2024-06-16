@@ -2,12 +2,12 @@ package com.api.factory.dictionary.assortment.normal.service
 
 import com.api.factory.auth.errors.GeneralError
 import com.api.factory.dictionary.assortment.models.AssortmentEntity
-import com.api.factory.dictionary.assortment.normal.models.NormalEntity
 import com.api.factory.dictionary.assortment.normal.dto.NormalInput
 import com.api.factory.dictionary.assortment.normal.dto.NormalOutputFull
+import com.api.factory.dictionary.assortment.normal.models.NormalEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Service
 @Transactional
@@ -33,7 +33,7 @@ class NormalService {
         val n = NormalEntity.new {
             this.obj = objectEnt
             this.count = obj.count
-            this.date = LocalDate.now()
+            this.date = LocalDateTime.now()
         }
 
         return n.let {

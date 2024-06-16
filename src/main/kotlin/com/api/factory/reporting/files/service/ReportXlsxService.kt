@@ -3,15 +3,14 @@ package com.api.factory.reporting.files.service
 import com.api.factory.reporting.config.XLSXMultipartFile
 import com.api.factory.reporting.core.service.IReportService
 import com.api.factory.statistic.service.IStatisticService
-import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.IndexedColors
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
-import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder.BorderSide
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.io.*
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.time.LocalDate
 
 @Service
@@ -71,6 +70,11 @@ class ReportXlsxService(
         return XLSXMultipartFile(date, "oneDay", inputStream)
 
     }
+
+    override fun generateReportDayMonthYear(date: LocalDate): MultipartFile {
+        TODO("Not yet implemented")
+    }
+
     private fun createHeaderCellStyle(workbook: XSSFWorkbook): XSSFCellStyle? {
         val style = workbook.createCellStyle()
         val font = workbook.createFont()
@@ -82,9 +86,7 @@ class ReportXlsxService(
         return style
     }
 
-    override fun generateReport(reportId: Long, date: LocalDate): MultipartFile {
-        TODO("Not yet implemented")
-    }
+
 
     override fun generateFullReport(dateStart: LocalDate, dateEnd: LocalDate): MultipartFile {
         TODO("Not yet implemented")
