@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8090:8090"
+      - "8099:8099"
     volumes:
       - .:/home/gradle/src
     command: gradle build -x test
