@@ -21,26 +21,34 @@ import java.time.LocalDate
 class ReportXlsxService(
     val statsService: IStatisticService,
     val reportService: IReportService,
-    val storageService: MinioService
+    val storageService: MinioService,
 
-) : IReportXlsxService {
+    ) : IReportXlsxService {
 
     override fun generateReport(date: LocalDate): FileOutput {
         val data = reportService.getByDate(date)
         val workbook = XSSFWorkbook()
         val sheet = workbook.createSheet("Report")
 
-        val headerRow = sheet.createRow(0)
+        val hRow = sheet.createRow(0)
+        hRow.createCell(0).setCellValue("Отчёт за $date")
+
+
+        val headerRow = sheet.createRow(1)
         val headers = listOf(
             "ID",
             "Объект",
             "Сортамент",
             "Отдел",
+            "Начальник участка",
             "Дата",
             "Количество",
             "Установленная норма",
             "Общий вес",
-            "Вес по установленной норме"
+            "Вес по установленной норме",
+            "Дельта",
+            "Процент выполнения",
+            "Выполнено",
         )
 
         for ((index, header) in headers.withIndex()) {
@@ -50,16 +58,21 @@ class ReportXlsxService(
         }
 
         for ((rowIndex, report) in data.withIndex()) {
-            val row = sheet.createRow(rowIndex + 1)
+            val row = sheet.createRow(rowIndex + 2)
             row.createCell(0).setCellValue(report.id.toString())
             row.createCell(1).setCellValue(report.obj.name)
             row.createCell(2).setCellValue(report.assortment.name)
             row.createCell(3).setCellValue(report.type.desription)
-            row.createCell(4).setCellValue(report.date.toString())
-            row.createCell(5).setCellValue(report.count.toString())
-            row.createCell(6).setCellValue(report.normal.toString())
-            row.createCell(7).setCellValue(report.getTotalWeight())
-            row.createCell(8).setCellValue(report.getTotalWeightNormal())
+            row.createCell(4).setCellValue(report.user?.name ?: " -")
+            row.createCell(5).setCellValue(report.date.toString())
+            row.createCell(6).setCellValue(report.count.toString())
+            row.createCell(7).setCellValue(report.normal.toString())
+            row.createCell(8).setCellValue(report.getTotalWeight())
+            row.createCell(9).setCellValue(report.getTotalWeightNormal())
+            row.createCell(10).setCellValue(report.getDelta())
+            row.createCell(11).setCellValue(report.getDeltaPercent())
+            row.createCell(12).setCellValue(report.getPositive())
+
         }
 
         for (i in headers.indices) {
@@ -84,7 +97,10 @@ class ReportXlsxService(
         val workbook = XSSFWorkbook()
         val sheet = workbook.createSheet("Report")
 
-        val headerRow = sheet.createRow(0)
+        val hRow = sheet.createRow(0)
+        hRow.createCell(0).setCellValue("Общий отчёт")
+
+        val headerRow = sheet.createRow(1)
         val headers = listOf(
             "Объект / Выработка отдела",
 
@@ -108,7 +124,7 @@ class ReportXlsxService(
         }
 
         data.entries.forEachIndexed { rowIndex, d ->
-            val row = sheet.createRow(rowIndex + 1)
+            val row = sheet.createRow(rowIndex + 2)
             row.createCell(0).setCellValue(d.key.name)
 
             row.createCell(1).setCellValue(d.value.day.find { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
@@ -159,15 +175,35 @@ class ReportXlsxService(
         val workbook = XSSFWorkbook()
         val sheet = workbook.createSheet("Report")
 
-        val headerRow = sheet.createRow(0)
+        val hRow = sheet.createRow(0)
+        hRow.createCell(0).setCellValue("Отчёт за даты ${dateStart} - ${dateEnd}")
+
+        val headerRow = sheet.createRow(1)
         val headers = listOf(
             "Объект / Выработка отдела",
+
+
+            "${TypeFoundation.Assembly.desription} - факт",
+            "${TypeFoundation.Welding.desription} - факт",
+            "${TypeFoundation.Loading.desription} - факт",
+
+            "${TypeFoundation.Assembly.desription} - норма",
+            "${TypeFoundation.Welding.desription} - норма",
+            "${TypeFoundation.Loading.desription} - норма",
+
+            "${TypeFoundation.Assembly.desription} - дельта",
+            "${TypeFoundation.Welding.desription} - дельта",
+            "${TypeFoundation.Loading.desription} - дельта",
+
+            "${TypeFoundation.Assembly.desription} - дельта %",
+            "${TypeFoundation.Welding.desription} - дельта %",
+            "${TypeFoundation.Loading.desription} - дельта %",
 
             TypeFoundation.Assembly.desription,
             TypeFoundation.Welding.desription,
             TypeFoundation.Loading.desription,
 
-        )
+            )
 
         for ((index, header) in headers.withIndex()) {
             val cell = headerRow.createCell(index)
@@ -176,12 +212,32 @@ class ReportXlsxService(
         }
 
         data.entries.forEachIndexed { rowIndex, d ->
-            val row = sheet.createRow(rowIndex + 1)
+            val row = sheet.createRow(rowIndex + 2)
             row.createCell(0).setCellValue(d.key.name)
 
             row.createCell(1).setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
             row.createCell(2).setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.count ?: 0.0)
             row.createCell(3).setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.count ?: 0.0)
+
+            row.createCell(4).setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.normal ?: 0.0)
+            row.createCell(5).setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.normal ?: 0.0)
+            row.createCell(6).setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.normal ?: 0.0)
+
+            row.createCell(7).setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.getDelta() ?: 0.0)
+            row.createCell(8).setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.getDelta() ?: 0.0)
+            row.createCell(9).setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.getDelta() ?: 0.0)
+
+            row.createCell(10)
+                .setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.getDeltaPercent() ?: 0.0)
+            row.createCell(11)
+                .setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.getDeltaPercent() ?: 0.0)
+            row.createCell(12)
+                .setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.getDeltaPercent() ?: 0.0)
+
+            row.createCell(13).setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.getPositive() ?: " ")
+            row.createCell(14).setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.getPositive() ?: " ")
+            row.createCell(15).setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.getPositive() ?: " ")
+
 
         }
 
@@ -202,10 +258,88 @@ class ReportXlsxService(
     }
 
 
-
-
     override fun generateReportByDepartment(departId: Long, dateStart: LocalDate, dateEnd: LocalDate): FileOutput {
-        TODO("Not yet implemented")
+        val data = statsService.getRatesByObject(departId, dateStart, dateEnd)
+
+        val workbook = XSSFWorkbook()
+        val sheet = workbook.createSheet("Report")
+
+        val hRow = sheet.createRow(0)
+        hRow.createCell(0).setCellValue("Отчёт за даты ${dateStart} - ${dateEnd}")
+
+        val headerRow = sheet.createRow(1)
+        val headers = listOf(
+            "Объект / Выработка отдела",
+
+            "${TypeFoundation.Assembly.desription} - факт",
+            "${TypeFoundation.Welding.desription} - факт",
+            "${TypeFoundation.Loading.desription} - факт",
+
+            "${TypeFoundation.Assembly.desription} - норма",
+            "${TypeFoundation.Welding.desription} - норма",
+            "${TypeFoundation.Loading.desription} - норма",
+
+            "${TypeFoundation.Assembly.desription} - дельта",
+            "${TypeFoundation.Welding.desription} - дельта",
+            "${TypeFoundation.Loading.desription} - дельта",
+
+            "${TypeFoundation.Assembly.desription} - дельта %",
+            "${TypeFoundation.Welding.desription} - дельта %",
+            "${TypeFoundation.Loading.desription} - дельта %",
+
+            TypeFoundation.Assembly.desription,
+            TypeFoundation.Welding.desription,
+            TypeFoundation.Loading.desription,
+        )
+
+        for ((index, header) in headers.withIndex()) {
+            val cell = headerRow.createCell(index)
+            cell.setCellValue(header)
+            cell.cellStyle = createHeaderCellStyle(workbook)
+        }
+
+        data.entries.forEachIndexed { rowIndex, d ->
+            val row = sheet.createRow(rowIndex + 2)
+            row.createCell(0).setCellValue(d.key.name)
+
+            row.createCell(1).setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
+            row.createCell(2).setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.count ?: 0.0)
+            row.createCell(3).setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.count ?: 0.0)
+
+            row.createCell(4).setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.normal ?: 0.0)
+            row.createCell(5).setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.normal ?: 0.0)
+            row.createCell(6).setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.normal ?: 0.0)
+
+            row.createCell(7).setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.getDelta() ?: 0.0)
+            row.createCell(8).setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.getDelta() ?: 0.0)
+            row.createCell(9).setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.getDelta() ?: 0.0)
+
+            row.createCell(10)
+                .setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.getDeltaPercent() ?: 0.0)
+            row.createCell(11)
+                .setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.getDeltaPercent() ?: 0.0)
+            row.createCell(12)
+                .setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.getDeltaPercent() ?: 0.0)
+
+            row.createCell(13).setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.getPositive() ?: " ")
+            row.createCell(14).setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.getPositive() ?: " ")
+            row.createCell(15).setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.getPositive() ?: " ")
+
+        }
+
+
+        for (i in headers.indices) {
+            sheet.autoSizeColumn(i)
+        }
+
+        val outputStream = ByteArrayOutputStream()
+        workbook.write(outputStream)
+        workbook.close()
+
+        return storageService.addObject(
+            XLSXMultipartFile("${dateStart} - ${dateEnd}", "oneDay", outputStream.toByteArray()),
+            true
+        )
     }
 }
 

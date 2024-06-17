@@ -43,4 +43,14 @@ class ReportXlsxController(
     ): FileOutput {
         return service.generateFullReport(dateStart, dateEnd)
     }
+
+    @GetMapping("/department")
+    fun generateReportStamp(
+        response: HttpServletResponse,
+        @RequestParam departId: Long,
+        @RequestParam dateStart: LocalDate,
+        @RequestParam dateEnd: LocalDate,
+    ): FileOutput {
+        return service.generateReportByDepartment(departId, dateStart, dateEnd)
+    }
 }
