@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import java.io.InputStream
 import java.time.LocalDate
 
 @RestController
@@ -26,14 +27,14 @@ class ReportXlsxController(
     fun generateReport(
         response: HttpServletResponse,
         @RequestParam date: LocalDate,
-    ): ResponseEntity<ByteArray> {
+    ): ResponseEntity<InputStream> {
         val result = service.generateReport(date)
         val headers = HttpHeaders()
 
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=${result.originalFilename}")
-        headers.add(HttpHeaders.CONTENT_TYPE, result.contentType)
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
 
-        return ResponseEntity(result.bytes, headers, HttpStatus.OK)
+        return ResponseEntity(result.inputStream, headers, HttpStatus.OK)
     }
 
     @GetMapping("/full")
@@ -45,7 +46,7 @@ class ReportXlsxController(
         val headers = HttpHeaders()
 
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=${result.originalFilename}")
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-binary")
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
 
         return ResponseEntity(result.bytes, headers, HttpStatus.OK)
     }

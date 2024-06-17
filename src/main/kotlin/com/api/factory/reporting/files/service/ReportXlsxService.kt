@@ -4,6 +4,7 @@ import com.api.factory.reporting.config.XLSXMultipartFile
 import com.api.factory.reporting.core.enums.TypeFoundation
 import com.api.factory.reporting.core.service.IReportService
 import com.api.factory.statistic.service.IStatisticService
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.poi.ss.usermodel.IndexedColors
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
@@ -18,6 +19,7 @@ import java.time.LocalDate
 class ReportXlsxService(
     val statsService: IStatisticService,
     val reportService: IReportService,
+    val objectMapper: ObjectMapper
 ) : IReportXlsxService {
 
     override fun generateReport(date: LocalDate): XLSXMultipartFile {
@@ -74,24 +76,26 @@ class ReportXlsxService(
 
     override fun generateReportDayMonthYear(date: LocalDate): XLSXMultipartFile {
         val data = statsService.getStatisticDayMonthTotal(date)
+
+        println(objectMapper.writeValueAsString(data))
         val workbook = XSSFWorkbook()
         val sheet = workbook.createSheet("Report")
 
         val headerRow = sheet.createRow(0)
         val headers = listOf(
-            "Объект",
+            "Объект / Выработка отдела",
 
-            "Выработка отдела ${TypeFoundation.Assembly.desription} за сутки",
-            "Выработка отдела ${TypeFoundation.Welding.desription} за сутки",
-            "Выработка отдела ${TypeFoundation.Loading.desription} за сутки",
+            "${TypeFoundation.Assembly.desription} за сутки",
+            "${TypeFoundation.Welding.desription} за сутки",
+            "${TypeFoundation.Loading.desription} за сутки",
 
-            "Выработка отдела ${TypeFoundation.Assembly.desription} за месяц",
-            "Выработка отдела ${TypeFoundation.Welding.desription} за месяц",
-            "Выработка отдела ${TypeFoundation.Loading.desription} за месяц",
+            " ${TypeFoundation.Assembly.desription} за месяц",
+            " ${TypeFoundation.Welding.desription} за месяц",
+            " ${TypeFoundation.Loading.desription} за месяц",
 
-            "Выработка отдела ${TypeFoundation.Assembly.desription} за всё время",
-            "Выработка отдела ${TypeFoundation.Welding.desription} за всё время",
-            "Выработка отдела ${TypeFoundation.Loading.desription} за всё время",
+            " ${TypeFoundation.Assembly.desription} за всё время",
+            " ${TypeFoundation.Welding.desription} за всё время",
+            " ${TypeFoundation.Loading.desription} за всё время",
         )
 
         // Create header cells
@@ -105,20 +109,19 @@ class ReportXlsxService(
             val row = sheet.createRow(rowIndex + 1)
             row.createCell(0).setCellValue(d.key.name)
 
-            row.createCell(1).setCellValue(d.value.day.firstOrNull { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
-            row.createCell(2).setCellValue(d.value.day.firstOrNull { it.type == TypeFoundation.Welding }?.count ?: 0.0)
-            row.createCell(3).setCellValue(d.value.day.firstOrNull { it.type == TypeFoundation.Loading }?.count ?: 0.0)
+            row.createCell(1).setCellValue(d.value.day.find { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
+            row.createCell(2).setCellValue(d.value.day.find { it.type == TypeFoundation.Welding }?.count ?: 0.0)
+            row.createCell(3).setCellValue(d.value.day.find { it.type == TypeFoundation.Loading }?.count ?: 0.0)
 
-            row.createCell(4).setCellValue(d.value.month.firstOrNull { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
-            row.createCell(5).setCellValue(d.value.month.firstOrNull { it.type == TypeFoundation.Welding }?.count ?: 0.0)
-            row.createCell(6).setCellValue(d.value.month.firstOrNull { it.type == TypeFoundation.Loading }?.count ?: 0.0)
+            row.createCell(4).setCellValue(d.value.month.find { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
+            row.createCell(5).setCellValue(d.value.month.find { it.type == TypeFoundation.Welding }?.count ?: 0.0)
+            row.createCell(6).setCellValue(d.value.month.find { it.type == TypeFoundation.Loading }?.count ?: 0.0)
 
-            row.createCell(7).setCellValue(d.value.year.firstOrNull { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
-            row.createCell(8).setCellValue(d.value.year.firstOrNull { it.type == TypeFoundation.Welding }?.count ?: 0.0)
-            row.createCell(9).setCellValue(d.value.year.firstOrNull { it.type == TypeFoundation.Loading }?.count ?: 0.0)
+            row.createCell(7).setCellValue(d.value.year.find { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
+            row.createCell(8).setCellValue(d.value.year.find { it.type == TypeFoundation.Welding }?.count ?: 0.0)
+            row.createCell(9).setCellValue(d.value.year.find { it.type == TypeFoundation.Loading }?.count ?: 0.0)
 
         }
-
 
 
         for (i in headers.indices) {

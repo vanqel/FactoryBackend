@@ -14,6 +14,7 @@ import com.api.factory.reporting.core.service.IReportService
 import com.api.factory.statistic.dto.StatsByTypeSum
 import com.api.factory.statistic.dto.StatsObjectDayMonthYear
 import com.api.factory.statistic.dto.StatsTypeOutput
+import org.jetbrains.exposed.sql.and
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -273,18 +274,15 @@ class StatisticService(
         dateEnd: LocalDate,
     ): Map<ObjectOutput, List<StatsByTypeSum>> {
         val today = ReportZMKEntity.find {
-            ReportZMKTable.date less dateEnd
-            ReportZMKTable.date greater dateStart
+            (ReportZMKTable.date less dateStart).and(ReportZMKTable.date greater dateEnd)
         }.toList().map {
             reportService.getDTOByOutput(it)
         }
-
         val stats = today.groupBy {
             it.obj
         }.map { e ->
             e.key to getStatsOne(e.value)
         }.toMap()
-
         return stats
     }
 
