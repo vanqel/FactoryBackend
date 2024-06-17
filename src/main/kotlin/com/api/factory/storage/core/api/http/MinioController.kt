@@ -30,7 +30,7 @@ class MinioController(
         val uuidImage = service.addObject(file)
         imgService.putLink(
             CreateImageLink(
-                UUID.fromString(uuid), uuidImage.uuid
+                UUID.fromString(uuid),  UUID.fromString(uuidImage.uuid)
             )
         )
         return uuidImage

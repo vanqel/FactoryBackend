@@ -4,6 +4,8 @@ import com.api.factory.reporting.config.XLSXMultipartFile
 import com.api.factory.reporting.core.enums.TypeFoundation
 import com.api.factory.reporting.core.service.IReportService
 import com.api.factory.statistic.service.IStatisticService
+import com.api.factory.storage.core.service.FileOutput
+import com.api.factory.storage.core.service.MinioService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.poi.ss.usermodel.IndexedColors
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
@@ -19,10 +21,11 @@ import java.time.LocalDate
 class ReportXlsxService(
     val statsService: IStatisticService,
     val reportService: IReportService,
-    val objectMapper: ObjectMapper
+    val storageService: MinioService
+
 ) : IReportXlsxService {
 
-    override fun generateReport(date: LocalDate): XLSXMultipartFile {
+    override fun generateReport(date: LocalDate): FileOutput {
         val data = reportService.getByDate(date)
         val workbook = XSSFWorkbook()
         val sheet = workbook.createSheet("Report")
@@ -68,14 +71,16 @@ class ReportXlsxService(
         workbook.close()
 
 
-        return XLSXMultipartFile(date.toString(), "oneDay", outputStream.toByteArray())
+        return storageService.addObject(
+            XLSXMultipartFile(date.toString(), "oneDay", outputStream.toByteArray()),
+            true
+        )
 
     }
 
-    override fun generateReportDayMonthYear(date: LocalDate): XLSXMultipartFile {
+    override fun generateReportDayMonthYear(date: LocalDate): FileOutput {
         val data = statsService.getStatisticDayMonthTotal(date)
 
-        println(objectMapper.writeValueAsString(data))
         val workbook = XSSFWorkbook()
         val sheet = workbook.createSheet("Report")
 
@@ -129,8 +134,10 @@ class ReportXlsxService(
         workbook.write(outputStream)
         workbook.close()
 
-
-        return XLSXMultipartFile(date.toString(), "full", outputStream.toByteArray())
+        return storageService.addObject(
+            XLSXMultipartFile(date.toString(), "oneDay", outputStream.toByteArray()),
+            true
+        )
 
     }
 
@@ -146,7 +153,7 @@ class ReportXlsxService(
     }
 
 
-    override fun generateFullReport(dateStart: LocalDate, dateEnd: LocalDate): MultipartFile {
+    override fun generateFullReport(dateStart: LocalDate, dateEnd: LocalDate): FileOutput {
         val data = statsService.getRatesByDatestamp(dateStart, dateEnd)
 
         val workbook = XSSFWorkbook()
@@ -187,13 +194,17 @@ class ReportXlsxService(
         workbook.write(outputStream)
         workbook.close()
 
-        return XLSXMultipartFile("$dateStart - $dateEnd", "full", outputStream.toByteArray())
+        return storageService.addObject(
+            XLSXMultipartFile("${dateStart} - ${dateEnd}", "oneDay", outputStream.toByteArray()),
+            true
+        )
+
     }
 
 
 
 
-    override fun generateReportByDepartment(departId: Long, dateStart: LocalDate, dateEnd: LocalDate): MultipartFile {
+    override fun generateReportByDepartment(departId: Long, dateStart: LocalDate, dateEnd: LocalDate): FileOutput {
         TODO("Not yet implemented")
     }
 }

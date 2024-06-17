@@ -23,6 +23,18 @@ class MinioService(
                 .expiry(1, TimeUnit.HOURS)
                 .build()
         )
+        return FileOutput(url, name.toString())
+    }
+
+    fun getObject(name: String): FileOutput? {
+        val url = client.getPresignedObjectUrl(
+            GetPresignedObjectUrlArgs.builder()
+                .method(Method.GET)
+                .bucket(property.bucketName)
+                .`object`(name)
+                .expiry(1, TimeUnit.HOURS)
+                .build()
+        )
         return FileOutput(url, name)
     }
 
@@ -67,9 +79,24 @@ class MinioService(
 
         return getObject(name)!!
     }
+
+    fun addObject(obj: MultipartFile, random: Boolean): FileOutput {
+        val name = "${(Math.random()*100000+100000).toInt()}-${obj.name}"
+
+        client.putObject(
+            PutObjectArgs.builder()
+                .bucket(property.bucketName)
+                .`object`(name)
+                .stream(obj.inputStream, obj.size, -1)
+                .contentType(obj.contentType)
+                .build()
+        )
+
+        return getObject(name)!!
+    }
 }
 
 data class FileOutput(
     val url: String?,
-    val uuid: UUID,
+    val uuid: String,
 )

@@ -10,6 +10,7 @@ class XLSXMultipartFile(
     private val type: String,
     private val inputStream: ByteArray,
 ) : MultipartFile {
+
     override fun getInputStream(): InputStream {
         return ByteArrayInputStream(inputStream)
     }
