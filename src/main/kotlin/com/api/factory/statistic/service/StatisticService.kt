@@ -274,7 +274,7 @@ class StatisticService(
         dateEnd: LocalDate,
     ): Map<ObjectOutput, List<StatsByTypeSum>> {
         val today = ReportZMKEntity.find {
-            (ReportZMKTable.date less dateStart).and(ReportZMKTable.date greater dateEnd)
+            (ReportZMKTable.date greater dateStart).and(ReportZMKTable.date less dateEnd)
         }.toList().map {
             reportService.getDTOByOutput(it)
         }
@@ -291,7 +291,7 @@ class StatisticService(
         dateEnd: LocalDate,
     ): List<StatsByTypeSum> {
         val today = ReportZMKEntity.find {
-            (ReportZMKTable.date less dateStart).and(ReportZMKTable.date greater dateEnd)
+            (ReportZMKTable.date greater dateStart).and(ReportZMKTable.date less dateEnd)
         }.toList().map {
             reportService.getDTOByOutput(it)
         }
