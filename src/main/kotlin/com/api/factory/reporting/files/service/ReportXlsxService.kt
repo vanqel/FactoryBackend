@@ -1,5 +1,6 @@
 package com.api.factory.reporting.files.service
 
+import com.api.factory.auth.models.department.DepartmentEntity
 import com.api.factory.reporting.config.XLSXMultipartFile
 import com.api.factory.reporting.core.enums.TypeFoundation
 import com.api.factory.reporting.core.service.IReportService
@@ -131,28 +132,36 @@ class ReportXlsxService(
             row.createCell(0).s(workbook).setCellValue(d.key.name)
 
             row.createCell(1).s(workbook).setCellValue(d.value.day
-                .find { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
+                .find { it.type == TypeFoundation.Assembly }?.count ?: 0.0
+            )
             row.createCell(2).s(workbook).setCellValue(d.value.day
-                .find { it.type == TypeFoundation.Welding }?.count ?: 0.0)
+                .find { it.type == TypeFoundation.Welding }?.count ?: 0.0
+            )
             row.createCell(3).s(workbook).setCellValue(d.value.day
-                .find { it.type == TypeFoundation.Loading }?.count ?: 0.0)
+                .find { it.type == TypeFoundation.Loading }?.count ?: 0.0
+            )
 
             row.createCell(4).s(workbook).setCellValue(d.value.month
-                .find { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
+                .find { it.type == TypeFoundation.Assembly }?.count ?: 0.0
+            )
             row.createCell(5).s(workbook).setCellValue(d.value.month
-                .find { it.type == TypeFoundation.Welding }?.count ?: 0.0)
+                .find { it.type == TypeFoundation.Welding }?.count ?: 0.0
+            )
             row.createCell(6).s(workbook).setCellValue(d.value.month
-                .find { it.type == TypeFoundation.Loading }?.count ?: 0.0)
+                .find { it.type == TypeFoundation.Loading }?.count ?: 0.0
+            )
 
             row.createCell(7).s(workbook).setCellValue(d.value.year
-                .find { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
+                .find { it.type == TypeFoundation.Assembly }?.count ?: 0.0
+            )
             row.createCell(8).s(workbook).setCellValue(d.value.year
-                .find { it.type == TypeFoundation.Welding }?.count ?: 0.0)
+                .find { it.type == TypeFoundation.Welding }?.count ?: 0.0
+            )
             row.createCell(9).s(workbook).setCellValue(d.value.year
-                .find { it.type == TypeFoundation.Loading }?.count ?: 0.0)
+                .find { it.type == TypeFoundation.Loading }?.count ?: 0.0
+            )
 
         }
-
 
 
         val resultRow = sheet.createRow(rCount)
@@ -254,17 +263,24 @@ class ReportXlsxService(
             val row = sheet.createRow(rowIndex + 2)
             row.createCell(0).s(workbook).setCellValue(d.key.name)
 
-            row.createCell(1).s(workbook).setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
+            row.createCell(1).s(workbook)
+                .setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
             row.createCell(2).s(workbook).setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.count ?: 0.0)
             row.createCell(3).s(workbook).setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.count ?: 0.0)
 
-            row.createCell(4).s(workbook).setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.normal ?: 0.0)
-            row.createCell(5).s(workbook).setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.normal ?: 0.0)
-            row.createCell(6).s(workbook).setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.normal ?: 0.0)
+            row.createCell(4).s(workbook)
+                .setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.normal ?: 0.0)
+            row.createCell(5).s(workbook)
+                .setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.normal ?: 0.0)
+            row.createCell(6).s(workbook)
+                .setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.normal ?: 0.0)
 
-            row.createCell(7).s(workbook).setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.getDelta() ?: 0.0)
-            row.createCell(8).s(workbook).setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.getDelta() ?: 0.0)
-            row.createCell(9).s(workbook).setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.getDelta() ?: 0.0)
+            row.createCell(7).s(workbook)
+                .setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.getDelta() ?: 0.0)
+            row.createCell(8).s(workbook)
+                .setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.getDelta() ?: 0.0)
+            row.createCell(9).s(workbook)
+                .setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.getDelta() ?: 0.0)
 
             row.createCell(10).s(workbook)
                 .setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.getDeltaPercent() ?: 0.0)
@@ -273,9 +289,12 @@ class ReportXlsxService(
             row.createCell(12).s(workbook)
                 .setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.getDeltaPercent() ?: 0.0)
 
-            row.createCell(13).s(workbook).setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.getPositive() ?: " ")
-            row.createCell(14).s(workbook).setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.getPositive() ?: " ")
-            row.createCell(15).s(workbook).setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.getPositive() ?: " ")
+            row.createCell(13).s(workbook)
+                .setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.getPositive() ?: " ")
+            row.createCell(14).s(workbook)
+                .setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.getPositive() ?: " ")
+            row.createCell(15).s(workbook)
+                .setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.getPositive() ?: " ")
 
 
         }
@@ -299,12 +318,13 @@ class ReportXlsxService(
 
     override fun generateReportByDepartment(departId: Long, dateStart: LocalDate, dateEnd: LocalDate): FileOutput {
         val data = statsService.getRatesByObject(departId, dateStart, dateEnd)
-
+        val department = DepartmentEntity.findById(departId)
         val workbook = XSSFWorkbook()
         val sheet = workbook.createSheet("Report")
 
         val hRow = sheet.createRow(0)
         hRow.createCell(0).s(workbook).setCellValue("Отчёт за даты ${dateStart} - ${dateEnd}")
+        hRow.createCell(1).s(workbook).setCellValue("Отдел: ${department?.name}")
 
         val headerRow = sheet.createRow(1)
         val headers = listOf(
@@ -342,39 +362,54 @@ class ReportXlsxService(
             row.createCell(0).s(workbook).setCellValue(d.key.name)
 
             row.createCell(1).s(workbook).setCellValue(d.value
-                .find { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
+                .find { it.type == TypeFoundation.Assembly }?.count ?: 0.0
+            )
             row.createCell(2).s(workbook).setCellValue(d.value
-                .find { it.type == TypeFoundation.Welding }?.count ?: 0.0)
+                .find { it.type == TypeFoundation.Welding }?.count ?: 0.0
+            )
             row.createCell(3).s(workbook).setCellValue(d.value
-                .find { it.type == TypeFoundation.Loading }?.count ?: 0.0)
+                .find { it.type == TypeFoundation.Loading }?.count ?: 0.0
+            )
 
             row.createCell(4).s(workbook).setCellValue(d.value
-                .find { it.type == TypeFoundation.Assembly }?.normal ?: 0.0)
+                .find { it.type == TypeFoundation.Assembly }?.normal ?: 0.0
+            )
             row.createCell(5).s(workbook).setCellValue(d.value
-                .find { it.type == TypeFoundation.Welding }?.normal ?: 0.0)
+                .find { it.type == TypeFoundation.Welding }?.normal ?: 0.0
+            )
             row.createCell(6).s(workbook).setCellValue(d.value
-                .find { it.type == TypeFoundation.Loading }?.normal ?: 0.0)
+                .find { it.type == TypeFoundation.Loading }?.normal ?: 0.0
+            )
 
             row.createCell(7).s(workbook).setCellValue(d.value
-                .find { it.type == TypeFoundation.Assembly }?.getDelta() ?: 0.0)
+                .find { it.type == TypeFoundation.Assembly }?.getDelta() ?: 0.0
+            )
             row.createCell(8).s(workbook).setCellValue(d.value
-                .find { it.type == TypeFoundation.Welding }?.getDelta() ?: 0.0)
+                .find { it.type == TypeFoundation.Welding }?.getDelta() ?: 0.0
+            )
             row.createCell(9).s(workbook).setCellValue(d.value
-                .find { it.type == TypeFoundation.Loading }?.getDelta() ?: 0.0)
+                .find { it.type == TypeFoundation.Loading }?.getDelta() ?: 0.0
+            )
 
             row.createCell(10).s(workbook).setCellValue(d.value
-                .find { it.type == TypeFoundation.Assembly }?.getDeltaPercent() ?: 0.0)
+                .find { it.type == TypeFoundation.Assembly }?.getDeltaPercent() ?: 0.0
+            )
             row.createCell(11).s(workbook).setCellValue(d.value
-                .find { it.type == TypeFoundation.Welding }?.getDeltaPercent() ?: 0.0)
+                .find { it.type == TypeFoundation.Welding }?.getDeltaPercent() ?: 0.0
+            )
             row.createCell(12).s(workbook).setCellValue(d.value
-                .find { it.type == TypeFoundation.Loading }?.getDeltaPercent() ?: 0.0)
+                .find { it.type == TypeFoundation.Loading }?.getDeltaPercent() ?: 0.0
+            )
 
             row.createCell(13).s(workbook).setCellValue(d.value
-                .find { it.type == TypeFoundation.Assembly }?.getPositive() ?: " ")
+                .find { it.type == TypeFoundation.Assembly }?.getPositive() ?: " "
+            )
             row.createCell(14).s(workbook).setCellValue(d.value
-                .find { it.type == TypeFoundation.Welding }?.getPositive() ?: " ")
+                .find { it.type == TypeFoundation.Welding }?.getPositive() ?: " "
+            )
             row.createCell(15).s(workbook).setCellValue(d.value
-                .find { it.type == TypeFoundation.Loading }?.getPositive() ?: " ")
+                .find { it.type == TypeFoundation.Loading }?.getPositive() ?: " "
+            )
 
         }
 
@@ -394,7 +429,7 @@ class ReportXlsxService(
     }
 }
 
-fun XSSFCell.s(workbook: XSSFWorkbook): XSSFCell{
+fun XSSFCell.s(workbook: XSSFWorkbook): XSSFCell {
     val style = workbook.createCellStyle()
     val font = workbook.createFont()
     font.bold = false
