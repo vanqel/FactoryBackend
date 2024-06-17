@@ -23,4 +23,12 @@ data class ReportZMKOutput(
     fun getTotalWeight() = count*assortment.count
 
     fun getTotalWeightNormal() = normal*assortment.count
+    
+    fun getDelta() = getTotalWeight() - getTotalWeightNormal()
+
+    fun getDeltaPercent() =
+        if(getDelta() == 0.0) 0.0
+        else 100* getTotalWeight()  / if(getTotalWeightNormal() == 0.0) getTotalWeight() else getTotalWeightNormal()
+
+    fun getPositive() = if(getDelta() > 0) "Выполнена" else "Не выполнена"
 }
