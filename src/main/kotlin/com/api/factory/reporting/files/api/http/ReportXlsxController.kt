@@ -50,4 +50,19 @@ class ReportXlsxController(
 
         return ResponseEntity(result.bytes, headers, HttpStatus.OK)
     }
+
+    @GetMapping("/stamp")
+    fun generateReportStamp(
+        response: HttpServletResponse,
+        @RequestParam dateStart: LocalDate,
+        @RequestParam dateEnd: LocalDate,
+    ): ResponseEntity<ByteArray> {
+        val result = service.generateFullReport (dateStart, dateEnd)
+        val headers = HttpHeaders()
+
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=${result.originalFilename}")
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
+
+        return ResponseEntity(result.bytes, headers, HttpStatus.OK)
+    }
 }

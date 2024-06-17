@@ -40,7 +40,6 @@ class ReportXlsxService(
             "Вес по установленной норме"
         )
 
-        // Create header cells
         for ((index, header) in headers.withIndex()) {
             val cell = headerRow.createCell(index)
             cell.setCellValue(header)
@@ -68,9 +67,8 @@ class ReportXlsxService(
         workbook.write(outputStream)
         workbook.close()
 
-        val inputStream: InputStream = ByteArrayInputStream(outputStream.toByteArray())
 
-        return XLSXMultipartFile(date, "oneDay", inputStream)
+        return XLSXMultipartFile(date.toString(), "oneDay", outputStream.toByteArray())
 
     }
 
@@ -98,7 +96,6 @@ class ReportXlsxService(
             " ${TypeFoundation.Loading.desription} за всё время",
         )
 
-        // Create header cells
         for ((index, header) in headers.withIndex()) {
             val cell = headerRow.createCell(index)
             cell.setCellValue(header)
@@ -132,9 +129,8 @@ class ReportXlsxService(
         workbook.write(outputStream)
         workbook.close()
 
-        val inputStream: InputStream = ByteArrayInputStream(outputStream.toByteArray())
 
-        return XLSXMultipartFile(date, "full", inputStream)
+        return XLSXMultipartFile(date.toString(), "full", outputStream.toByteArray())
 
     }
 
@@ -151,8 +147,51 @@ class ReportXlsxService(
 
 
     override fun generateFullReport(dateStart: LocalDate, dateEnd: LocalDate): MultipartFile {
-        TODO("Not yet implemented")
+        val data = statsService.getRatesByDatestamp(dateStart, dateEnd)
+
+        val workbook = XSSFWorkbook()
+        val sheet = workbook.createSheet("Report")
+
+        val headerRow = sheet.createRow(0)
+        val headers = listOf(
+            "Объект / Выработка отдела",
+
+            TypeFoundation.Assembly.desription,
+            TypeFoundation.Welding.desription,
+            TypeFoundation.Loading.desription,
+
+        )
+
+        for ((index, header) in headers.withIndex()) {
+            val cell = headerRow.createCell(index)
+            cell.setCellValue(header)
+            cell.cellStyle = createHeaderCellStyle(workbook)
+        }
+
+        data.entries.forEachIndexed { rowIndex, d ->
+            val row = sheet.createRow(rowIndex + 1)
+            row.createCell(0).setCellValue(d.key.name)
+
+            row.createCell(1).setCellValue(d.value.find { it.type == TypeFoundation.Assembly }?.count ?: 0.0)
+            row.createCell(2).setCellValue(d.value.find { it.type == TypeFoundation.Welding }?.count ?: 0.0)
+            row.createCell(3).setCellValue(d.value.find { it.type == TypeFoundation.Loading }?.count ?: 0.0)
+
+        }
+
+
+        for (i in headers.indices) {
+            sheet.autoSizeColumn(i)
+        }
+
+        val outputStream = ByteArrayOutputStream()
+        workbook.write(outputStream)
+        workbook.close()
+
+        return XLSXMultipartFile("$dateStart - $dateEnd", "full", outputStream.toByteArray())
     }
+
+
+
 
     override fun generateReportByDepartment(departId: Long, dateStart: LocalDate, dateEnd: LocalDate): MultipartFile {
         TODO("Not yet implemented")

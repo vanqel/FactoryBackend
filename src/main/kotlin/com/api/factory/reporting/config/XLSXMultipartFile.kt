@@ -1,17 +1,17 @@
 package com.api.factory.reporting.config
 
 import org.springframework.web.multipart.MultipartFile
+import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.InputStream
-import java.time.LocalDate
 
 class XLSXMultipartFile(
-    private val date: LocalDate,
+    private val date: String,
     private val type: String,
-    private val inputStream: InputStream,
+    private val inputStream: ByteArray,
 ) : MultipartFile {
     override fun getInputStream(): InputStream {
-        return inputStream
+        return ByteArrayInputStream(inputStream)
     }
 
     override fun getName(): String {
@@ -27,18 +27,18 @@ class XLSXMultipartFile(
     }
 
     override fun isEmpty(): Boolean {
-        return inputStream.available() == 0
+        return getInputStream().available() == 0
     }
 
     override fun getSize(): Long {
-        return inputStream.available().toLong()
+        return getInputStream().available().toLong()
     }
 
     override fun getBytes(): ByteArray {
-        return inputStream.readBytes()
+        return inputStream
     }
 
     override fun transferTo(dest: File) {
-        inputStream.copyTo(dest.outputStream())
+        getInputStream().copyTo(dest.outputStream())
     }
 }
