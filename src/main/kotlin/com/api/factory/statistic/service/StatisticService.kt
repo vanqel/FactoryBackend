@@ -224,11 +224,11 @@ class StatisticService(
         departId: Long, date: LocalDate,
     ): Map<ObjectOutput, List<StatsByTypeSum>> {
 
-       DepartmentEntity.findById(departId)?.let {
-           if (!it.foundation){
-               throw GeneralError("Отдела не является производственным")
-           }
-       } ?: throw GeneralError("Отдел не найден")
+        DepartmentEntity.findById(departId)?.let {
+            if (!it.foundation) {
+                throw GeneralError("Отдела не является производственным")
+            }
+        } ?: throw GeneralError("Отдел не найден")
 
         val today = ReportZMKEntity.find {
             ReportZMKTable.date less date.plusDays(1)
@@ -306,9 +306,9 @@ class StatisticService(
             StatsObjectDayMonthYear(it.name, emptyList(), emptyList(), emptyList())
         }.toMutableMap()
 
-        val today = getRatesByDatestamp(date.plusDays(1), date)
-        val month = getRatesByDatestamp(date.plusDays(1), date.minusMonths(1))
-        val year = getRatesByDatestamp(date.plusDays(1), date.minusYears(1000))
+        val today = getRatesByDatestamp(date, date.plusDays(1))
+        val month = getRatesByDatestamp(date.minusMonths(1), date.plusDays(1))
+        val year = getRatesByDatestamp(date.minusYears(1000), date.plusDays(1))
 
         objectList.forEach { (t, _) ->
             objectList[t] =
@@ -321,7 +321,6 @@ class StatisticService(
         }
         return objectList.toMap()
     }
-
 
 
 }
