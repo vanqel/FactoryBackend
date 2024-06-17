@@ -77,8 +77,8 @@ class StatsController(override val service: IStatisticService) : IStatsControlle
     override fun getRatesByDatestamp(
         @RequestParam dateStart: LocalDate,
         @RequestParam dateEnd: LocalDate,
-    ): Map<ObjectOutput, List<StatsByTypeSum>> {
-        return service.getRatesByDatestamp(dateStart, dateEnd)
+    ): List<StatsByTypeSum> {
+        return service.getRatesByDatestampSimple(dateStart, dateEnd)
     }
 
     @GetMapping()

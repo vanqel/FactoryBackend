@@ -286,6 +286,19 @@ class StatisticService(
         return stats
     }
 
+    override fun getRatesByDatestampSimple(
+        dateStart: LocalDate,
+        dateEnd: LocalDate,
+    ): List<StatsByTypeSum> {
+        val today = ReportZMKEntity.find {
+            (ReportZMKTable.date less dateStart).and(ReportZMKTable.date greater dateEnd)
+        }.toList().map {
+            reportService.getDTOByOutput(it)
+        }
+        return getStatsOne(today)
+    }
+
+
     override fun getStatisticDayMonthTotal(
         date: LocalDate,
     ): Map<ObjectOutput, StatsObjectDayMonthYear> {
