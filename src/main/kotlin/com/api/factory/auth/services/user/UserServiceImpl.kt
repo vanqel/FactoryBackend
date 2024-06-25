@@ -56,12 +56,6 @@ class UserServiceImpl(
     override fun updateUser(body: UserUpdateInput): Result<UserOutput> {
         validate()
 
-        val usr = usersRepository.findUserById(body.id)!!
-
-        if (usr.roles.first().name == RolesEnum.ADMIN) {
-            return Result.error(AuthError())
-        }
-
         val user: UserOutput = usersRepository.updateUser(body)
 
         return Result.ok(user)
