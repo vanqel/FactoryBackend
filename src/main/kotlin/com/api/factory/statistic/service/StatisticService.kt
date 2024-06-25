@@ -299,6 +299,20 @@ class StatisticService(
     }
 
 
+    data class ObjSum(val name: String, val count: Double)
+
+    override fun getStatsObjects(): List<ObjSum> {
+        val objectList = objectService.getAllObjects().associateWith {
+           0.0
+        }.toMutableMap()
+
+        val all = getRatesByDatestamp(LocalDate.now().minusYears(1000), LocalDate.now().plusDays(1))
+
+        return objectList.map {
+            ObjSum(it.key.name, (all[it.key]?.sumOf { s -> s.count } ?: 0.0))
+        }
+    }
+
     override fun getStatisticDayMonthTotal(
         date: LocalDate,
     ): Map<ObjectOutput, StatsObjectDayMonthYear> {

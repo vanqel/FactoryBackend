@@ -5,6 +5,7 @@ import com.api.factory.dictionary.assortment.normal.dto.NormalInput
 import com.api.factory.statistic.dto.StatsByTypeSum
 import com.api.factory.statistic.dto.StatsObjectDayMonthYear
 import com.api.factory.statistic.dto.StatsTypeOutput
+import com.api.factory.statistic.service.StatisticService.ObjSum
 import java.time.LocalDate
 
 interface IStatisticService {
@@ -23,5 +24,6 @@ interface IStatisticService {
 
     fun getStatisticDayMonthTotal(date: LocalDate): Map<ObjectOutput, StatsObjectDayMonthYear>
 
+    fun getStatsObjects(): List<ObjSum>
 }
 

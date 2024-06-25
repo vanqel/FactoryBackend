@@ -6,6 +6,7 @@ import com.api.factory.statistic.dto.StatsByTypeSum
 import com.api.factory.statistic.dto.StatsObjectDayMonthYear
 import com.api.factory.statistic.dto.StatsTypeOutput
 import com.api.factory.statistic.service.IStatisticService
+import com.api.factory.statistic.service.StatisticService
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.web.bind.annotation.*
 
@@ -81,11 +82,16 @@ class StatsController(override val service: IStatisticService) : IStatsControlle
         return service.getRatesByDatestampSimple(dateStart, dateEnd)
     }
 
-    @GetMapping()
+    @GetMapping
     override fun getStatisticDayMonthTotal(
         @RequestParam date: LocalDate,
     ): Map<ObjectOutput, StatsObjectDayMonthYear> {
         return service.getStatisticDayMonthTotal(date)
     }
 
+    @GetMapping("stats-objects")
+    override fun getStatsObjects(): List<StatisticService.ObjSum> {
+        return service.getStatsObjects()
+    }
 }
+

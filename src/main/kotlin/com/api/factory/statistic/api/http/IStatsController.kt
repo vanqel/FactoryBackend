@@ -6,6 +6,8 @@ import com.api.factory.statistic.dto.StatsByTypeSum
 import com.api.factory.statistic.dto.StatsObjectDayMonthYear
 import com.api.factory.statistic.dto.StatsTypeOutput
 import com.api.factory.statistic.service.IStatisticService
+import com.api.factory.statistic.service.StatisticService
+import org.springframework.web.bind.annotation.RequestParam
 import java.time.LocalDate
 
 interface IStatsController {
@@ -23,4 +25,5 @@ interface IStatsController {
     fun getRatesByDatestamp(dateStart: LocalDate, dateEnd: LocalDate): List<StatsByTypeSum>
     fun getStatisticDayMonthTotal(date: LocalDate): Map<ObjectOutput, StatsObjectDayMonthYear>
 
+    fun getStatsObjects(): List<StatisticService.ObjSum>
 }
