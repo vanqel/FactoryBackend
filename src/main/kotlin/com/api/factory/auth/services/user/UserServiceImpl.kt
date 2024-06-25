@@ -62,10 +62,6 @@ class UserServiceImpl(
             return Result.error(AuthError())
         }
 
-        if (usr.roles.first().name == RolesEnum.DIMK && getRole() != RolesEnum.ADMIN.name) {
-            return Result.error(AuthError())
-        }
-
         val user: UserOutput = usersRepository.updateUser(body)
 
         return Result.ok(user)
