@@ -10,8 +10,10 @@ import com.api.factory.extensions.Result
 import com.api.factory.extensions.error
 import com.api.factory.extensions.ok
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional
 class DepartmentService(
     val repository: IDepartmentRepository
 ) : IDepartmentService {

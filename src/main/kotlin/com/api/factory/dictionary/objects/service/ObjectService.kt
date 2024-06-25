@@ -7,8 +7,10 @@ import com.api.factory.dictionary.objects.dto.ObjectUpdateInput
 import com.api.factory.dictionary.objects.repository.IObjectRepository
 import com.api.factory.extensions.getResponse
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional
 class ObjectService(override val repo: IObjectRepository) : IObjectService {
     override fun saveObject(body: ObjectInput): ObjectOutput =
         repo.saveObject(body).let {

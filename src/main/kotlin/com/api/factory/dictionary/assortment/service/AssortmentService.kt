@@ -7,8 +7,10 @@ import com.api.factory.dictionary.assortment.dto.AssortmentUpdateInput
 import com.api.factory.dictionary.assortment.repository.IAssortmentRepository
 import com.api.factory.extensions.getResponse
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional
 class AssortmentService(override val repo: IAssortmentRepository) : IAssortmentService {
     override fun saveAssortment(body: AssortmentInput): AssortmentOutput =
         repo.saveAssortment(body).let {

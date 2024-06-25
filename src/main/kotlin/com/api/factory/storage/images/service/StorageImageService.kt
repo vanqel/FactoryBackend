@@ -7,9 +7,11 @@ import com.api.factory.storage.images.dto.CreateImageLink
 import com.api.factory.storage.images.repository.IStorageImageRepository
 import com.api.factory.storage.core.service.MinioService
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
+@Transactional
 class StorageImageService(
     val repo: IStorageImageRepository,
     val minioService: MinioService,

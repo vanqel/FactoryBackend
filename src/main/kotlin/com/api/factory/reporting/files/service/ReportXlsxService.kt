@@ -7,20 +7,18 @@ import com.api.factory.reporting.core.service.IReportService
 import com.api.factory.statistic.service.IStatisticService
 import com.api.factory.storage.core.service.FileOutput
 import com.api.factory.storage.core.service.MinioService
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.poi.ss.usermodel.HorizontalAlignment
 import org.apache.poi.ss.usermodel.IndexedColors
 import org.apache.poi.xssf.usermodel.XSSFCell
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.stereotype.Service
-import org.springframework.web.multipart.MultipartFile
-import java.io.ByteArrayInputStream
+import org.springframework.transaction.annotation.Transactional
 import java.io.ByteArrayOutputStream
-import java.io.InputStream
 import java.time.LocalDate
 
 @Service
+@Transactional
 class ReportXlsxService(
     val statsService: IStatisticService,
     val reportService: IReportService,
